@@ -1,4 +1,4 @@
-package com.github.simpledino.kafka.tutorial2;
+package kafka.tutorial2;
 
 import com.google.common.collect.Lists;
 import com.twitter.hbc.ClientBuilder;
@@ -28,7 +28,7 @@ public class TwitterProducer {
     String consumerSecret = "gcwm9Tgkmd7pceYeS9ajEofeDyFhG9LGznS0X3YJGTvUqzFT7v";
     String token = "1278618034253361152-GOK06wbZlMhIIe7UKiryVBxkLlHOW6";
     String secret = "H7CQBkeXvHwsC1Qbrav3A3pi2QRXA6y3bhIclaa2ONb7l";
-    List<String> terms = Lists.newArrayList("kafka");
+    List<String> terms = Lists.newArrayList("kafka","bitcoin","japan");
 
     public TwitterProducer(){
 
@@ -113,6 +113,15 @@ public class TwitterProducer {
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,StringSerializer.class.getName());
+
+        properties.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        properties.setProperty(ProducerConfig.ACKS_CONFIG,"all");
+        properties.setProperty(ProducerConfig.RETRIES_CONFIG,Integer.toString(Integer.MAX_VALUE));
+        properties.setProperty(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5");
+
+        properties.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG,"snappy");
+        properties.setProperty(ProducerConfig.LINGER_MS_CONFIG,"20");
+        properties.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, Integer.toString(32*2014));
 
         //create the producer
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(properties);

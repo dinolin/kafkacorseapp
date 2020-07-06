@@ -1,4 +1,4 @@
-package com.github.simpledino.kafka.tutorial1;
+package kafka.tutorial1;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -6,10 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
-public class ProducerDemoWithCallback {
-    public static void main(String[] args) {
-        final Logger logger = LoggerFactory.getLogger(ProducerDemoWithCallback.class);
+public class ProducerDemoKeys {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        final Logger logger = LoggerFactory.getLogger(ProducerDemoKeys.class.getName());
 
         String bootstrapServers = "127.0.0.1:9092";
         //create Producer properties
@@ -21,9 +22,14 @@ public class ProducerDemoWithCallback {
         //create the producer
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(properties);
         //create a producer recode
-        for(int i=0; i<10; i++){
-            ProducerRecord<String,String> record = new ProducerRecord<String, String>("first_topic","hello world" + i);
 
+        for(int i=0; i<10; i++){
+            String topic = "first_topic";
+            String value = "Hello World" + Integer.toString(i);
+            String key = "id_" + Integer.toString(i);
+            ProducerRecord<String,String> record = new ProducerRecord<String, String>(topic, key ,value);
+
+            logger.info("key: " + key);
             //send data
 
             producer.send(record, new Callback() {
@@ -40,7 +46,7 @@ public class ProducerDemoWithCallback {
                         logger.error("Error with producing", e);
                     }
                 }
-            });
+            }).get();  //Block Send, Don't do this in Production
         }
         producer.flush();
         producer.close();
